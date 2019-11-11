@@ -11,6 +11,8 @@ using System.Net;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Http.Formatting;
+using System.Reflection;
 
 namespace ComputerShutdown
 {
@@ -44,6 +46,7 @@ namespace ComputerShutdown
 
         static void Main(string[] args)
         {
+            AddApplicationToStartup();
             cancelShutdown();
             Console.WriteLine("Do Not Close!");
             int timeout = 0;
@@ -116,8 +119,6 @@ namespace ComputerShutdown
 
                 Thread.Sleep(timeout);
             }
-
-            //AddApplicationToStartup();
         }
 
         /**
@@ -125,10 +126,8 @@ namespace ComputerShutdown
          */
         public static void AddApplicationToStartup()
         {
-            using (RegistryKey key = Registry.CurrentUser.OpenSubKey("SOFTWAREMicrosoftWindowsCurrentVersionRun", true))
-            {
-                key.SetValue("ComputerShutdown", "C:ComputerShutdown.exe");
-            }
+            Microsoft.Win32.RegistryKey key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+            key.SetValue("ComputerShutdown", System.Reflection.Assembly.GetExecutingAssembly().Location);
         }
 
         /**
